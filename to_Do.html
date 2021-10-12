@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="to_DO.css" />
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+    <title>TO DO</title>
+</head>
+
+<body>
+    <header>
+        <h1 class="task-header">Insert a TODO</h1>
+        <input type="text" id="task-input" placeholder="Enter a Task">
+        <span class="add-Task-Button" id="addTaskButton">Add</span>
+    </header>
+    <div class="tasker-body">
+        <ul id="tasks"></ul>
+    </div>
+</body>
+
+</html>
+
+<script>
+    const todoObjectList = [];
+
+    class Todo_Class {
+        constructor(item) {
+            this.ulElement = item;
+        }
+
+        add() {
+            const todoInput = document.querySelector("#task-input").value;
+            if (todoInput == "") {
+                alert("You did not enter any item!")
+            } else {
+                const todoObject = {
+                    id: todoObjectList.length,
+                    todoText: todoInput,
+                    isDone: false,
+                }
+
+                todoObjectList.unshift(todoObject);
+                this.display();
+                document.querySelector("#task-input").value = '';
+
+            }
+        }
+
+        done_undone(x) {
+            const selectedTodoIndex = todoObjectList.findIndex((item) => item.id == x);
+            console.log(todoObjectList[selectedTodoIndex].isDone);
+            todoObjectList[selectedTodoIndex].isDone == false ? todoObjectList[selectedTodoIndex].isDone = true : todoObjectList[selectedTodoIndex].isDone = false;
+            this.display();
+        }
+
+        deleteElement(z) {
+            const selectedDelIndex = todoObjectList.findIndex((item) => item.id == z);
+
+            todoObjectList.splice(selectedDelIndex, 1);
+
+            this.display();
+        }
+
+
+        display() {
+            this.ulElement.innerHTML = "";
+
+            todoObjectList.forEach((object_item) => {
+                let str = JSON.stringify(object_item);
+                console.log(str);
+
+                const liElement = document.createElement("li");
+                const delBtn = document.createElement("i");
+
+                liElement.innerText = object_item.todoText;
+                liElement.setAttribute("data-id", object_item.id);
+
+                delBtn.setAttribute("data-id", object_item.id);
+                delBtn.classList.add("far", "fa", "fa-trash");
+
+                liElement.appendChild(delBtn);
+
+                delBtn.addEventListener("click", function (e) {
+                    const deleteId = e.target.getAttribute("data-id");
+                    myTodoList.deleteElement(deleteId);
+                })
+
+                liElement.addEventListener("click", function (e) {
+                    const selectedId = e.target.getAttribute("data-id");
+                    myTodoList.done_undone(selectedId);
+                })
+
+                if (object_item.isDone) {
+                    liElement.classList.add("checked");
+                }
+
+                this.ulElement.appendChild(liElement);
+            })
+        }
+    }
+
+
+
+
+    ////-----MAIN PROGRAM------------
+    const listSection = document.getElementById("tasks");
+
+    myTodoList = new Todo_Class(listSection);
+
+
+    document.getElementById("addTaskButton").addEventListener("click", function () {
+        myTodoList.add()
+    })
+
+    document.getElementById("task-input").addEventListener("keydown", function (e) {
+        if (e.keyCode == 13) {
+            myTodoList.add()
+        }
+    })
+</script>
